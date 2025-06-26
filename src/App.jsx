@@ -8,6 +8,7 @@ import './styles/App.css'
 function App() {
   const location = useLocation()
   const [activeTab, setActiveTab] = useState('json')
+  const [theme, setTheme] = useState('light')
 
   useEffect(() => {
     // Set active tab based on current route
@@ -15,6 +16,23 @@ function App() {
     else if (location.pathname === '/base64') setActiveTab('base64')
     else if (location.pathname === '/history') setActiveTab('history')
   }, [location])
+
+  useEffect(() => {
+    // Load theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+    setTheme(initialTheme)
+    document.documentElement.setAttribute('data-theme', initialTheme)
+    localStorage.setItem('theme', initialTheme)
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    document.documentElement.setAttribute('data-theme', newTheme)
+    localStorage.setItem('theme', newTheme)
+  }
 
   return (
     <div className="app">
@@ -46,6 +64,13 @@ function App() {
             >
               History
             </Link>
+            <button 
+              className="theme-toggle btn btn-secondary"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              <span className="theme-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
+            </button>
           </nav>
         </div>
       </header>
@@ -62,11 +87,11 @@ function App() {
 
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2024 Dev Toolbox. Built with React & Node.js</p>
+          <p>© 2024 Dev Toolbox. Built with React & Node.js</p>
         </div>
       </footer>
     </div>
   )
 }
 
-export default App 
+export default App
